@@ -7,6 +7,7 @@
 	<version>1.0.1-SNAPSHOT</version>
 	<name>weixin-nutz Maven Webapp</name>
 	<url>http://www.hzfanqun.net</url>
+	
 	<!-- 属性配置 -->
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
