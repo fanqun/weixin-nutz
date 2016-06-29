@@ -63,18 +63,18 @@ public class WxModule {
 
     /**
      * 微信入口
-     * 
+     *
+     * @param key 外部传入，多个公众号开发时用于区分
+     * @param req http请求
+     * @return 返回值
+     * @throws java.io.IOException
      * @author fanqun(hzfanqun@gmail.com)
      * @date 2016年5月23日 上午6:12:53
-     * @param key
-     *            外部传入，多个公众号开发时用于区分
-     * @param req
-     * @return
-     * @throws java.io.IOException
      */
     @At({"/weixin", "/weixin/?"})
     @Fail("http:200")
     public View msgIn(String key, HttpServletRequest req) throws IOException {
+        req.setCharacterEncoding("UTF-8");
         return Wxs.handle(getWxHandler(key), req, key);
     }
 
@@ -116,10 +116,10 @@ public class WxModule {
                 WxResp resp = wxApi.user_info(_ele, "zh_CN");
                 log.info(Json.toJson(resp));
                 System.out.println(index
-                                   + " : "
-                                   + _ele
-                                   + ", nickname: "
-                                   + resp.user().getNickname());
+                        + " : "
+                        + _ele
+                        + ", nickname: "
+                        + resp.user().getNickname());
                 User usr = Json.fromJson(User.class, Json.toJson(resp.user()));
                 usr.setCreateTime(new Date());
                 dao.insert(usr);
@@ -154,15 +154,14 @@ public class WxModule {
         br = null;
 
         System.out.println("buffer: " + buffer);
-        @SuppressWarnings("rawtypes")
         Map map = (Map) Json.fromJson(buffer.toString());
         System.out.println(map.get("content"));
 
         WxOutMsg omsg = new WxOutMsg();
         return wxApi.send(omsg.setMsgType("text")
-                              .setContent((String) map.get("content"))
-                              .setToUserName("o7Qdztw5hwdZ0x9R-TDsNol9yQR0"))
-                    .ok();
+                .setContent((String) map.get("content"))
+                .setToUserName("o7Qdztw5hwdZ0x9R-TDsNol9yQR0"))
+                .ok();
 
     }
 
@@ -183,13 +182,12 @@ public class WxModule {
     public void oauthUrlTest() {
         String url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=APPID&redirect_uri=REDIRECT_URI&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";
         url = url.replace("APPID", conf.get("appid"))
-                 .replace("REDIRECT_URI",
-                          Oauth2Util.urlEncodeUTF8(conf.get("oauth.redirect")
-                                                   + "/hb/oauth/service"));
+                .replace("REDIRECT_URI",
+                        Oauth2Util.urlEncodeUTF8(conf.get("oauth.redirect")
+                                + "/hb/oauth/service"));
         System.out.println(url);
     }
 
-    @SuppressWarnings("rawtypes")
     @At("/hb/oauth/service")
     @Ok("re:jsp:hb.bindhb")
     public String oauthService(HttpServletRequest req) {
@@ -197,11 +195,11 @@ public class WxModule {
 
         String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code";
         url = url.replace("APPID", conf.get("appid"))
-                 .replace("SECRET", conf.get("appsecret"))
-                 .replace("CODE", req.getParameter("code"));
+                .replace("SECRET", conf.get("appsecret"))
+                .replace("CODE", req.getParameter("code"));
         Map map = (Map) Json.fromJson(Http.get(url).getContent());
-        System.out.println("map=" + map );
-        System.out.println("openid=" + openid + ",  errcode=" +map.get("errcode"));
+        System.out.println("map=" + map);
+        System.out.println("openid=" + openid + ",  errcode=" + map.get("errcode"));
 
         if (map.get("errcode") == null) {
             openid = (String) map.get("openid");
@@ -209,9 +207,9 @@ public class WxModule {
             System.out.println("openid=" + openid);
         }
         HBWxUser wxuser = dao_hb.fetch(HBWxUser.class,
-                                       Cnd.where("openid", "=", openid).and("openid",
-                                                                            "NOT IS",
-                                                                            null));
+                Cnd.where("openid", "=", openid).and("openid",
+                        "NOT IS",
+                        null));
         if (wxuser != null) {
             req.setAttribute("hbUsername", wxuser.getHbUsername());
             return "jsp:hb.isBinding";
@@ -228,9 +226,9 @@ public class WxModule {
 
         String encode = SecureUtil.encrypt(password, SecureUtil.MD5, "utf-8");
         Record re = dao_hb.fetch("user_",
-                                 Cnd.where("username", "=", username)
-                                    .and("password", "=", encode)
-                                    .and("archived", "=", false));
+                Cnd.where("username", "=", username)
+                        .and("password", "=", encode)
+                        .and("archived", "=", false));
         if (re == null) {
             req.setAttribute("errmsg", "账号或密码验证失败");
             return "jsp:hb.bind_error";
