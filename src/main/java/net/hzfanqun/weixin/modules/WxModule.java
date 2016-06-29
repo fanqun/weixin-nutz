@@ -17,10 +17,8 @@ import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 import org.nutz.mvc.View;
-import org.nutz.mvc.annotation.At;
-import org.nutz.mvc.annotation.Fail;
-import org.nutz.mvc.annotation.Ok;
-import org.nutz.mvc.annotation.Param;
+import org.nutz.mvc.annotation.*;
+import org.nutz.mvc.annotation.Encoding;
 import org.nutz.weixin.bean.WxOutMsg;
 import org.nutz.weixin.bean.WxTemplateData;
 import org.nutz.weixin.bean.WxUser;
@@ -73,8 +71,8 @@ public class WxModule {
      */
     @At({"/weixin", "/weixin/?"})
     @Fail("http:200")
+    @Encoding(input = "UTF-8", output = "UTF-8")
     public View msgIn(String key, HttpServletRequest req) throws IOException {
-        req.setCharacterEncoding("UTF-8");
         return Wxs.handle(getWxHandler(key), req, key);
     }
 
