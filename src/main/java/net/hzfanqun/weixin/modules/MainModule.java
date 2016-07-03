@@ -18,9 +18,13 @@ import org.nutz.mvc.ioc.provider.ComboIocProvider;
 @Modules(scanPackage = true)
 @Ok("raw")
 @Fail("http:500")
-@IocBy(type = ComboIocProvider.class, args = { "*js", "config/", "*anno", "net.hzfanqun" })
+@IocBy(type = ComboIocProvider.class, args = {"*js",
+                                              "config/datasource.js",
+                                              "config/datasource-hb.js",
+                                              "config/",
+                                              "*anno",
+                                              "net.hzfanqun"})
 @SetupBy(MainSetup.class)
 @Encoding(input = "UTF-8", output = "UTF-8")
 @UrlMappingBy(value = UrlMappingSet.class)
-public class MainModule {
-}
+public class MainModule {}
