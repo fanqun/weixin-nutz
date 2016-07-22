@@ -4,13 +4,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
-        <dependent-module archiveName="nutzwx-1.r.57-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/nutzwx/nutzwx">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="nutz-1.r.57-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/nutz/nutz">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <property name="context-root" value="weixin-nutz"/>
         <property name="java-output-path" value="/weixin-nutz/target/classes"/>
+        <property name="context-root" value="wx-heishi"/>
     </wb-module>
 </project-modules>

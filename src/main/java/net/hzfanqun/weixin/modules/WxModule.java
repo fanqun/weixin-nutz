@@ -80,7 +80,7 @@ public class WxModule  {
 		return resp;
 	}
 	
-	@At("/sendtmsg")
+	//@At("/sendtmsg")
 	public WxResp sendTemplateMsg(){
 		String touser="o7Qdztw5hwdZ0x9R-TDsNol9yQR0";
 		String template_id = conf.get("templateid");

@@ -19,9 +19,9 @@ import org.nutz.weixin.bean.WxArticle;
 import org.w3c.dom.Element;
 
 import it.sauronsoftware.base64.Base64;
-import net.hzfanqun.weixin.pojo.baidu.BaiduAddressComponent;
-import net.hzfanqun.weixin.pojo.baidu.BaiduPlace;
-import net.hzfanqun.weixin.pojo.baidu.UserLocation;
+import net.hzfanqun.weixin.baidu.pojo.BaiduAddressComponent;
+import net.hzfanqun.weixin.baidu.pojo.BaiduPlace;
+import net.hzfanqun.weixin.baidu.pojo.UserLocation;
 
 /**
  * 百度地图操作类
@@ -44,7 +44,7 @@ public class BaiduMapUtil {
 	 */
 	public static List<BaiduPlace> searchPlace(String query, String lng, String lat) throws Exception {
 		// 拼装请求地址
-		String requestUrl = "http://api.map.baidu.com/place/v2/search?&query=QUERY&location=LAT,LNG&radius=2000&output=xml&scope=2&page_size=10&page_num=0&ak=m09fdFOXplYA1Rc1OEOzrXWr";
+		String requestUrl = "http://api.map.baidu.com/place/v2/search?&query=QUERY&location=LAT,LNG&radius=2000&output=xml&scope=2&page_size=10&page_num=0&ak=eUUTwRTc6ExNhelVQsgUH4BG7vuyiDKF";
 		requestUrl = requestUrl.replace("QUERY", URLEncoder.encode(query, "UTF-8"));
 		requestUrl = requestUrl.replace("LAT", lat);
 		requestUrl = requestUrl.replace("LNG", lng);
@@ -80,7 +80,7 @@ public class BaiduMapUtil {
 	 */
 	public static BaiduAddressComponent queryAddress(String lng, String lat) throws Exception {
 		// 拼装请求地址
-		String requestUrl = "http://api.map.baidu.com/geocoder/v2/?location=LAT,LNG&ak=m09fdFOXplYA1Rc1OEOzrXWr&callback=renderReverse&output=xml";
+		String requestUrl = "http://api.map.baidu.com/geocoder/v2/?location=LAT,LNG&ak=eUUTwRTc6ExNhelVQsgUH4BG7vuyiDKF&callback=renderReverse&output=xml";
 		requestUrl = requestUrl.replace("LAT", lat);
 		requestUrl = requestUrl.replace("LNG", lng);
 		// 调用Geocoding API 逆地理编码服务
@@ -103,8 +103,8 @@ public class BaiduMapUtil {
 	 */
 	public static List<WxArticle> makeArticleList(List<BaiduPlace> placeList, String bd09Lng, String bd09Lat) {
 		// 项目的根路径
-		String basePath = "http://www.hzfanqun.com/WxNutz/";
-		String imagePath = "http://wx.hzfanqun.com/images/";
+		String basePath = "http://wx.heishitech.com/";
+		String imagePath = "http://wx.heishitech.com/images/";
 		List<WxArticle> list = new ArrayList<>();
 		BaiduPlace place = null;
 		for (int i = 0; i < placeList.size(); i++) {
@@ -166,7 +166,7 @@ public class BaiduMapUtil {
 	 */
 	public static UserLocation geoconv(String lng, String lat) {
 		// 百度坐标转换接口
-		String convertUrl = "http://api.map.baidu.com/geoconv/v1/?coords={x},{y}&from=3&to=5&ak=m09fdFOXplYA1Rc1OEOzrXWr";
+		String convertUrl = "http://api.map.baidu.com/geoconv/v1/?coords={x},{y}&from=3&to=5&ak=eUUTwRTc6ExNhelVQsgUH4BG7vuyiDKF";
 		convertUrl = convertUrl.replace("{x}", lng);
 		convertUrl = convertUrl.replace("{y}", lat);
 

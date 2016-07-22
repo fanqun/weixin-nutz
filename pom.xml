@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.fineliving</groupId>
-	<artifactId>weixin-nutz</artifactId>
+	<artifactId>wx-heishi</artifactId>
 	<packaging>war</packaging>
-	<version>1.0.1-SNAPSHOT</version>
-	<name>weixin-nutz Maven Webapp</name>
+	<version>1.0.2-SNAPSHOT</version>
+	<name>heishitech weixin Maven Webapp</name>
 	<url>http://www.hzfanqun.net</url>
 	
 	<!-- 属性配置 -->
@@ -16,9 +16,10 @@
 		<repository>
 			<id>local-nexus</id>
 			<name>Nexus Repository</name>
-			<url>http://maven.hzfanqun.net:11981/nexus/content/groups/public/</url>
+			<url>http://maven.hzfanqun.net/nexus/content/groups/public/</url>
 			<snapshots>
 				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
 			</snapshots>
 			<releases>
 				<updatePolicy>never</updatePolicy>
@@ -82,6 +83,6 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>weixin-nutz</finalName>
+		<finalName>wx-heishi</finalName>
 	</build>
 </project>
