@@ -19,9 +19,9 @@ import org.nutz.lang.util.NutMap;
 import org.nutz.weixin.bean.WxArticle;
 import org.w3c.dom.Element;
 
-import net.hzfanqun.weixin.pojo.weather.Weather;
-import net.hzfanqun.weixin.pojo.weather.WeatherResp;
-import net.hzfanqun.weixin.pojo.weather.Zhishu;
+import net.hzfanqun.weixin.weather.pojo.Weather;
+import net.hzfanqun.weixin.weather.pojo.WeatherResp;
+import net.hzfanqun.weixin.weather.pojo.Zhishu;
 
 /**
  * 获取天气
@@ -50,8 +50,11 @@ public class WeatherUtil {
 	 * @return
 	 */
 	public static String queryWeatherIndex(String citykey) {
+		if (citykey == null)
+			return null;
 		StringBuffer sb = new StringBuffer();
 		String fromXml = WeatherUtil.getWeatherRespXml(citykey);
+		sb.append(WeatherUtil.getCurrentWeather(fromXml).getCity()).append("天气指数 \n");
 		List<Zhishu> zhishu = new ArrayList<>();
 		Element ele = Xmls.getEle(Xmls.xml(Lang.ins(fromXml)).getDocumentElement(), "zhishus");
 		Xmls.eachChildren(ele, new Each<Element>() {
@@ -86,7 +89,7 @@ public class WeatherUtil {
 		sb.append("更新: ").append(wr.getUpdatetime());
 		articleTop.setTitle(sb.toString());
 		articleTop.setDescription(sb.toString());
-		articleTop.setPicUrl("http://wx.hzfanqun.com/images/top.jpg");
+		articleTop.setPicUrl("http://wx.heishitech.com/images/top.jpg");
 		articleTop.setUrl("");
 		articleList.add(articleTop);
 		List<Weather> weather = new ArrayList<>();
@@ -102,10 +105,10 @@ public class WeatherUtil {
 			if (i == 0 && x > 17) {
 				System.out.println("x=" + x);
 				article.setTitle(w.getDate() + " " + w.getNight().getType() + " " + w.getLow().replace("低温", "").trim() + "~" + w.getHigh().replace("高温", "").trim());
-				article.setPicUrl("http://wx.hzfanqun.com/images/" + WeatherUtil.getWeatherPic(w.getNight().getType().replace("转", "_").replace("到", "_")));
+				article.setPicUrl("http://wx.heishitech.com/images/" + WeatherUtil.getWeatherPic(w.getNight().getType().replace("转", "_").replace("到", "_")));
 			} else {
 				article.setTitle(w.getDate() + " " + w.getDay().getType() + " " + w.getLow().replace("低温", "").trim() + "~" + w.getHigh().replace("高温", "").trim());
-				article.setPicUrl("http://wx.hzfanqun.com/images/" + WeatherUtil.getWeatherPic(w.getDay().getType().replace("转", "_").replace("到", "_")));
+				article.setPicUrl("http://wx.heishitech.com/images/" + WeatherUtil.getWeatherPic(w.getDay().getType().replace("转", "_").replace("到", "_")));
 			}
 			article.setDescription("");
 			article.setUrl("");

@@ -15,5 +15,8 @@ var ioc = {
 				java : "$config.get('encodingAesKey')"
 			}
 		}
+	},
+	wxCityKeyMap : {
+		type : "org.nutz.lang.util.NutMap"
 	}
 }

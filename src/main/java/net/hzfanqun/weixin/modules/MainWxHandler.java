@@ -1,18 +1,18 @@
 package net.hzfanqun.weixin.modules;
 
-import net.hzfanqun.weixin.bean.User;
-import net.hzfanqun.weixin.pojo.baidu.BaiduPlace;
-import net.hzfanqun.weixin.pojo.baidu.UserLocation;
-import net.hzfanqun.weixin.utils.BaiduMapUtil;
-import net.hzfanqun.weixin.utils.WeatherUtil;
+import java.util.Date;
+import java.util.List;
+
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.ioc.impl.PropertiesProxy;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.json.Json;
+import org.nutz.lang.util.NutMap;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
+import org.nutz.mvc.Mvcs;
 import org.nutz.weixin.bean.WxArticle;
 import org.nutz.weixin.bean.WxInMsg;
 import org.nutz.weixin.bean.WxOutMsg;
@@ -21,14 +21,23 @@ import org.nutz.weixin.spi.WxApi2;
 import org.nutz.weixin.spi.WxResp;
 import org.nutz.weixin.util.Wxs;
 
-import java.util.Date;
-import java.util.List;
+import net.hzfanqun.weixin.baidu.pojo.BaiduAddressComponent;
+import net.hzfanqun.weixin.baidu.pojo.BaiduPlace;
+import net.hzfanqun.weixin.baidu.pojo.UserLocation;
+import net.hzfanqun.weixin.bean.User;
+import net.hzfanqun.weixin.utils.BaiduMapUtil;
+import net.hzfanqun.weixin.utils.WeatherUtil;
 
 /**
+ * 
+ * 
  * @author fanqun(hzfanqun@gmail.com)
  * @date 2016年5月22日 下午9:11:42
  */
-@IocBean(name = "wxHandler", args = {"java:$config.get('token')", "java:$config.get('encodingAesKey')", "java:$config.get('appid')"})
+@IocBean(name = "wxHandler",
+        args = {"java:$config.get('token')",
+                "java:$config.get('encodingAesKey')",
+                "java:$config.get('appid')"})
 public class MainWxHandler extends BasicWxHandler {
     private final static Log log = Logs.get();
 
@@ -41,11 +50,9 @@ public class MainWxHandler extends BasicWxHandler {
     @Inject
     protected Dao dao;
 
-
     public MainWxHandler(String token, String aesKey, String appId) {
         super(token, aesKey, appId);
     }
-
 
     public WxOutMsg text(WxInMsg msg) {
         String content = msg.getContent();
@@ -56,9 +63,12 @@ public class MainWxHandler extends BasicWxHandler {
         else if (content.startsWith("附近")) {
             String keyWord = content.replaceAll("附近", "").trim();
             // 获取用户最后一次发送的地理位置
-            //UserLocation location = LocationMySQLUtil.getLastLocation(msg.getFromUserName());
-            UserLocation location = dao.fetch(UserLocation.class, Cnd.where("openId", "=", msg.getFromUserName()).desc("ct"));
-            //System.out.println("getLastLocation: " + location);
+            // UserLocation location =
+            // LocationMySQLUtil.getLastLocation(msg.getFromUserName());
+            UserLocation location = dao.fetch(UserLocation.class,
+                                              Cnd.where("openId", "=", msg.getFromUserName())
+                                                 .desc("ct"));
+            // System.out.println("getLastLocation: " + location);
             // 未获取到
             if (null == location) {
                 return Wxs.respText(getUsage());
@@ -66,16 +76,20 @@ public class MainWxHandler extends BasicWxHandler {
                 // 根据转换后（纠偏）的坐标搜索周边POI
                 List<BaiduPlace> placeList = null;
                 try {
-                    placeList = BaiduMapUtil.searchPlace(keyWord, location.getBd09Lng(), location.getBd09Lat());
-                } catch (Exception e) {
+                    placeList = BaiduMapUtil.searchPlace(keyWord,
+                                                         location.getBd09Lng(),
+                                                         location.getBd09Lat());
+                }
+                catch (Exception e) {
                     e.printStackTrace();
                 }
                 // 未搜索到POI
                 if (null == placeList || 0 == placeList.size()) {
                     return Wxs.respText(String.format("/难过，您发送的位置附近未搜索到“%s”信息！", keyWord));
                 } else {
-                    List<WxArticle> articleList = BaiduMapUtil.makeArticleList(placeList, location.getBd09Lng(),
-                            location.getBd09Lat());
+                    List<WxArticle> articleList = BaiduMapUtil.makeArticleList(placeList,
+                                                                               location.getBd09Lng(),
+                                                                               location.getBd09Lat());
                     // 回复图文消息
                     return Wxs.respNews(null, articleList);
                 }
@@ -86,12 +100,89 @@ public class MainWxHandler extends BasicWxHandler {
 
     public WxOutMsg eventClick(WxInMsg msg) {
         String eventKey = msg.getEventKey();
+        NutMap cityKeyMap = Mvcs.getIoc().get(NutMap.class, "wxCityKeyMap");
         log.info("eventKey: " + eventKey);
         if ("mk_index".equalsIgnoreCase(eventKey)) {
-            return Wxs.respText(null, WeatherUtil.queryWeatherIndex("101210101"));
+            String cityKey = null, respContent = null;
+            // 获取用户最后一次发送的地理位置
+            UserLocation location = dao.fetch(UserLocation.class,
+                                              Cnd.where("openId", "=", msg.getFromUserName())
+                                                 .desc("ct"));
+            if (location == null) {
+                respContent = "无法获取地理位置信息，请先发送地理位置消息！";
+            } else {
+                BaiduAddressComponent addr = null;
+                try {
+                    addr = BaiduMapUtil.queryAddress(location.getBd09Lng(), location.getBd09Lat());
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (null == addr) {
+                    respContent = "无法获取地址信息！";
+                } else {
+                    cityKey = (String) cityKeyMap.get(addr.getDistrict()
+                                                          .replace("区", "")
+                                                          .replace("市", "")
+                                                          .replace("县", ""));
+                    if (cityKey == null) {
+                        System.out.println(addr.getCity() + addr.getDistrict());
+                        cityKey = (String) cityKeyMap.get(addr.getCity().replace("市", ""));
+                    }
+                    if (cityKey == null)
+                        respContent = "无法获取天气数据";
+                    else
+                        respContent = WeatherUtil.queryWeatherIndex(cityKey);
+                }
+            }
+
+            if (respContent != null)
+                return Wxs.respText(respContent);
+            else
+                return null;
         } else if ("mk_forecast".equalsIgnoreCase(eventKey)) {
-            WeatherUtil.queryWeatherInfo("101210101");
-            return Wxs.respNews(null, WeatherUtil.queryWeatherInfo("101210101"));
+            String cityKey = null, respContent = null;
+            // 获取用户最后一次发送的地理位置
+            UserLocation location = dao.fetch(UserLocation.class,
+                                              Cnd.where("openId", "=", msg.getFromUserName())
+                                                 .desc("ct"));
+            if (location == null) {
+                respContent = "无法获取地理位置信息，请先发送地理位置消息！";
+            } else {
+                BaiduAddressComponent addr = null;
+                try {
+                    addr = BaiduMapUtil.queryAddress(location.getBd09Lng(), location.getBd09Lat());
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (null == addr) {
+                    respContent = "无法获取地址信息！";
+                } else {
+                    cityKey = (String) cityKeyMap.get(addr.getDistrict()
+                                                          .replace("区", "")
+                                                          .replace("市", "")
+                                                          .replace("县", ""));
+                    // 如果没找到，查找地级市
+                    if (cityKey == null) {
+                        System.out.println(addr.getCity() + addr.getDistrict());
+                        cityKey = (String) cityKeyMap.get(addr.getCity().replace("市", ""));
+                    }
+                    if (cityKey == null)
+                        respContent = "无法获取天气数据";
+                }
+            }
+
+            if (respContent != null)
+                return Wxs.respText(respContent);
+            else {
+                if (cityKey == null) {
+                    return null;
+
+                } else {
+                    return Wxs.respNews(null, WeatherUtil.queryWeatherInfo(cityKey));
+                }
+            }
         } else if ("mk_search".equalsIgnoreCase(eventKey)) {
             return Wxs.respText(getUsage());
         } else
@@ -125,12 +216,12 @@ public class MainWxHandler extends BasicWxHandler {
         return super.eventUnsubscribe(msg);
     }
 
-
     @Override
     public WxOutMsg location(WxInMsg msg) {
         StringBuffer buffer = new StringBuffer();
         // System.out.println("地理位置消息");
-        // System.out.println("Location_X=" + msg.getLocation_X() + ",Location_Y" + msg.getLocation_Y());
+        // System.out.println("Location_X=" + msg.getLocation_X() +
+        // ",Location_Y" + msg.getLocation_Y());
         // 用户发送的经纬度
         String lng = String.valueOf(msg.getLocation_Y());// requestMap.get("Location_Y");
         String lat = String.valueOf(msg.getLocation_X());// requestMap.get("Location_X");
@@ -143,13 +234,14 @@ public class MainWxHandler extends BasicWxHandler {
             userLocation.setOpenId(msg.getFromUserName());
             userLocation.setLabel(msg.getLabel());
             userLocation.setCt(new Date());
-            //System.out.println(userLocation);
+            // System.out.println(userLocation);
             // if (null != userLocation) {
             // bd09Lng = userLocation.getBd09Lng();
             // bd09Lat = userLocation.getBd09Lat();
             // }
             // 保存用户地理位置
-            // LocationMySQLUtil.saveUserLocation(msg.getFromUserName(), lng, lat, bd09Lng, bd09Lat);
+            // LocationMySQLUtil.saveUserLocation(msg.getFromUserName(), lng,
+            // lat, bd09Lng, bd09Lat);
             dao.insert(userLocation);
 
             buffer.append("[愉快]").append("成功接收您的位置！").append("\n\n");
@@ -173,7 +265,7 @@ public class MainWxHandler extends BasicWxHandler {
 
     /**
      * 使用说明
-     *
+     * 
      * @return
      */
     private static String getUsage() {

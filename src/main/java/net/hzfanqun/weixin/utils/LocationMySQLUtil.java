@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
 
-import net.hzfanqun.weixin.pojo.baidu.UserLocation;
+import net.hzfanqun.weixin.baidu.pojo.UserLocation;
 
 
 /**
