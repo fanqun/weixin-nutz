@@ -41,7 +41,7 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.nutz/nutz -->
+		<!-- nutz -->
 		<dependency>
 			<groupId>org.nutz</groupId>
 			<artifactId>nutz</artifactId>
@@ -54,19 +54,21 @@
 			<version>1.r.57</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
+		<!-- slf4j -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.7.12</version>
 		</dependency>
 
-		<!-- druid 连接池 -->
+		<!-- mysql driver -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.39</version>
 		</dependency>
+
+		<!-- druid 连接池 -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid</artifactId>
@@ -82,11 +84,15 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+
+		<!-- pinyin4j -->
 		<dependency>
 			<groupId>com.belerweb</groupId>
 			<artifactId>pinyin4j</artifactId>
 			<version>2.5.1</version>
 		</dependency>
+
+		<!-- base64 -->
 		<dependency>
 			<groupId>it.sauronsoftware</groupId>
 			<artifactId>base64.Base64</artifactId>
