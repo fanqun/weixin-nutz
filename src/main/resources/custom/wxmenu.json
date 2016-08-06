@@ -15,8 +15,8 @@
             },
             {
                "type":"view",
-               "name":"视频",
-               "url":"http://v.qq.com/"
+               "name":"绑定HB账号",
+               "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxfe1882073f44315e&redirect_uri=http%3A%2F%2Ffineliving.ngrok.wendal.cn%2Fweixin-nutz%2Fhb%2Foauth%2Fservice&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect"
             },
             {
                "type":"location_select",
